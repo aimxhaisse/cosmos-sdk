@@ -30,6 +30,7 @@ func GetQueryCmd() *cobra.Command {
 		GetCmdQueryValidatorCommission(),
 		GetCmdQueryValidatorSlashes(),
 		GetCmdQueryDelegatorRewards(),
+		GetCmdQueryAllRewards(),
 		GetCmdQueryCommunityPool(),
 	)
 
@@ -308,6 +309,45 @@ $ %s query distribution community-pool
 			queryClient := types.NewQueryClient(clientCtx)
 
 			res, err := queryClient.CommunityPool(cmd.Context(), &types.QueryCommunityPoolRequest{})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
+// GetCmdQueryAllRewards implements the all query delegator rewards command.
+func GetCmdQueryAllRewards() *cobra.Command {
+
+	cmd := &cobra.Command{
+		Use:   "all-rewards",
+		Short: "Query all distribution rewards or rewards from a particular validator",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Query all rewards.
+
+Example:
+$ %s query distribution all-rewards
+`,
+				version.AppName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+			queryClient := types.NewQueryClient(clientCtx)
+
+			ctx := cmd.Context()
+			res, err := queryClient.DelegationRewards(
+				ctx,
+				&types.QueryDelegationRewardsRequest{},
+			)
 			if err != nil {
 				return err
 			}

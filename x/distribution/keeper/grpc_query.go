@@ -154,6 +154,31 @@ func (k Keeper) DelegationRewards(c context.Context, req *types.QueryDelegationR
 	return &types.QueryDelegationRewardsResponse{Rewards: rewards}, nil
 }
 
+// @@MXS
+func (k Keeper) DelegationAllRewards(c context.Context, req *types.QueryDelegationAllRewardsRequest) (*types.QueryDelegationAllRewardsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(c)
+
+	var delRewards []types.DelegationDelegatorReward
+
+	k.stakingKeeper.IterateAllDelegations(
+		ctx, func(del stakingtypes.Delegation) (stop bool) {
+			valAddr := del.GetValidatorAddr()
+			val := k.stakingKeeper.Validator(ctx, valAddr)
+			endingPeriod := k.IncrementValidatorPeriod(ctx, val)
+			delReward := k.CalculateDelegationRewards(ctx, val, del, endingPeriod)
+
+			delRewards = append(delRewards, types.NewDelegationDelegatorReward(valAddr, delReward))
+			return false
+		},
+	)
+	
+	return &types.QueryDelegationAllRewardsResponse{Rewards: delRewards}, nil
+}
+
 // DelegationTotalRewards the total rewards accrued by a each validator
 func (k Keeper) DelegationTotalRewards(c context.Context, req *types.QueryDelegationTotalRewardsRequest) (*types.QueryDelegationTotalRewardsResponse, error) {
 	if req == nil {

@@ -151,15 +151,6 @@ message QueryDelegationRewardsResponse {
       [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins"];
 }
 
-// QueryDelegationTotalRewardsRequest is the request type for the
-// Query/DelegationTotalRewards RPC method.
-message QueryDelegationTotalRewardsRequest {
-  option (gogoproto.equal)           = false;
-  option (gogoproto.goproto_getters) = false;
-  // delegator_address defines the delegator address to query for.
-  string delegator_address = 1;
-}
-
 // @@MXS
 message QueryDelegationAllRewardsRequest {
   option (gogoproto.equal)           = false;

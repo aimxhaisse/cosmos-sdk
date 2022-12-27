@@ -3,6 +3,8 @@
 set -eo pipefail
 
 protoc_gen_gocosmos() {
+  echo "protoc_gen_gocosmos..."
+    
   if ! grep "github.com/gogo/protobuf => github.com/regen-network/protobuf" go.mod &>/dev/null ; then
     echo -e "\tPlease run this command from somewhere inside the cosmos-sdk folder."
     return 1
@@ -12,6 +14,8 @@ protoc_gen_gocosmos() {
 }
 
 protoc_gen_gocosmos
+
+echo "generating protos..."
 
 proto_dirs=$(find ./proto -path -prune -o -name '*.proto' -print0 | xargs -0 -n1 dirname | sort | uniq)
 for dir in $proto_dirs; do
@@ -25,6 +29,8 @@ Mgoogle/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. \
 
 done
 
+echo "generating docs..."
+
 # command to generate docs using protoc-gen-doc
 buf protoc \
   -I "proto" \
@@ -34,12 +40,18 @@ buf protoc \
   $(find "$(pwd)/proto" -maxdepth 5 -name '*.proto')
 go mod tidy
 
+echo "generating testdata..."
+
 # generate codec/testdata proto code
 buf protoc -I "proto" -I "third_party/proto" -I "testutil/testdata" --gocosmos_out=plugins=interfacetype+grpc,\
 Mgoogle/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. ./testutil/testdata/*.proto
 
+echo "generating baseapp..."
+
 # generate baseapp test messages
-(cd baseapp/testutil; buf generate)
+# (cd baseapp/testutil; buf generate)
+
+echo "moving protos..."
 
 # move proto files to the right places
 cp -r github.com/cosmos/cosmos-sdk/* ./

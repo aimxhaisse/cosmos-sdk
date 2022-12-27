@@ -344,9 +344,9 @@ $ %s query distribution all-rewards
 			queryClient := types.NewQueryClient(clientCtx)
 
 			ctx := cmd.Context()
-			res, err := queryClient.DelegationRewards(
+			res, err := queryClient.DelegationAllRewards(
 				ctx,
-				&types.QueryDelegationRewardsRequest{},
+				&types.QueryDelegationAllRewardsRequest{},
 			)
 			if err != nil {
 				return err

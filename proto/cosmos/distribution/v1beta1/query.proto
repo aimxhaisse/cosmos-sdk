@@ -40,6 +40,11 @@ service Query {
                                    "{validator_address}";
   }
 
+  // @@MXS
+  rpc DelegationAllRewards(QueryDelegationAllRewardsRequest) returns (QueryDelegationAllRewardsResponse) {
+    option (google.api.http).get = "/cosmos/distribution/v1beta1/delegators/allrewards";
+  }
+
   // DelegationTotalRewards queries the total rewards accrued by a each
   // validator.
   rpc DelegationTotalRewards(QueryDelegationTotalRewardsRequest) returns (QueryDelegationTotalRewardsResponse) {
@@ -144,6 +149,27 @@ message QueryDelegationRewardsResponse {
   // rewards defines the rewards accrued by a delegation.
   repeated cosmos.base.v1beta1.DecCoin rewards = 1
       [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins"];
+}
+
+// QueryDelegationTotalRewardsRequest is the request type for the
+// Query/DelegationTotalRewards RPC method.
+message QueryDelegationTotalRewardsRequest {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+  // delegator_address defines the delegator address to query for.
+  string delegator_address = 1;
+}
+
+// @@MXS
+message QueryDelegationAllRewardsRequest {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+}
+
+// @@MXS
+message QueryDelegationAllRewardsResponse {
+  // TODO: add type that embbeds delegator address
+  repeated DelegationDelegatorReward rewards = 1 [(gogoproto.nullable) = false];
 }
 
 // QueryDelegationTotalRewardsRequest is the request type for the
